@@ -1,0 +1,23 @@
+:root {
+    --primary-color: #212529;
+    --background-color: #ffffff;
+    --text-color: #212529;
+}
+
+[data-theme="dark"] {
+    --primary-color: #ffffff;
+    --background-color: #212529;
+    --text-color: #ffffff;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.card {
+    background-color: var(--background-color);
+    border-color: var(--text-color);
+}
+
+/* Diğer stil tanımlamaları... */ 

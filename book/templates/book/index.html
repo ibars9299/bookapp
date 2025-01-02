@@ -79,18 +79,18 @@
                 <i class="fa-solid fa-book-open fa-2x me-2"></i>
                 <span>Kitap Dünyası</span>
             </a>
-            <form class="d-flex align-items-center" style="max-width: 500px;" method="get" action="">
-                <select class="form-select me-2" style="width: auto;" onchange="if(this.value) window.location.href=this.value;">
-                    <option value="{% url 'index' %}" {% if not current_category %}selected{% endif %}>Tüm Kategoriler</option>
+            <form class="d-flex align-items-center" style="max-width: 500px;" method="get" action="{% url 'index' %}">
+                <select class="form-select me-2" name="category" style="width: auto;" onchange="this.form.submit()">
+                    <option value="" {% if not current_category %}selected{% endif %}>Tüm Kategoriler</option>
                     {% for category in categories %}
-                    <option value="{% url 'index' %}?category={{ category.slug }}" 
-                            {% if current_category == category.slug %}selected{% endif %}>
+                    <option value="{{ category.slug }}" {% if current_category == category.slug %}selected{% endif %}>
                         {{ category.name }}
                     </option>
                     {% endfor %}
                 </select>
                 <div class="d-flex position-relative" style="flex: 1;">
-                    <input class="form-control" type="search" placeholder="Ara..." aria-label="Search">
+                    <input class="form-control" type="search" name="search" placeholder="Ara..." 
+                           value="{{ search_query|default:'' }}" aria-label="Search">
                     <button class="btn btn-outline-light position-absolute" style="right: 0;" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
@@ -166,7 +166,7 @@
                                 <div class="d-flex justify-content-center">
                                     {% if book.pdf %}
                                         {% if user.is_authenticated %}
-                                            <a href="{% url 'read_book' book.id %}" class="btn btn-outline-dark btn-sm px-4">
+                                            <a href="{% url 'book_notes' book.id %}" class="btn btn-outline-dark btn-sm px-4">
                                                 <i class="fas fa-eye me-2"></i>Oku
                                             </a>
                                         {% else %}
@@ -189,6 +189,37 @@
                     </div>
                     {% endfor %}
                 </div>
+
+                <!-- Kitap listesinin altına sayfalama -->
+                {% if books.paginator.num_pages > 1 %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if books.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ books.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in books.paginator.page_range %}
+                        <li class="page-item {% if books.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                        {% endfor %}
+
+                        {% if books.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ books.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
             </div>
         </div>
     </div>
